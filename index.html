@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HAZA Collab Tasks — Team Task Manager</title>
+    <meta
+      name="description"
+      content="HAZA Collaborators Task Manager — Manage your team's work efficiently and professionally."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Animated background particles -->
+    <div class="bg-particles" id="bgParticles"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-wrap">
+          <div class="logo-icon">
+            <svg
+              viewBox="0 0 40 40"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="40" height="40" rx="12" fill="url(#logoGrad)" />
+              <path
+                d="M10 20L17 27L30 13"
+                stroke="white"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <defs>
+                <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+                  <stop offset="0%" stop-color="#7C3AED" />
+                  <stop offset="100%" stop-color="#4F46E5" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="logo-text">
+            <span class="brand">HAZA</span>
+            <span class="sub-brand">Collab Tasks</span>
+          </div>
+        </div>
+        <button
+          class="sidebar-toggle"
+          id="sidebarToggle"
+          title="Toggle Sidebar"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a
+          href="#"
+          class="nav-item active"
+          data-view="dashboard"
+          onclick="switchView('dashboard', this)"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+          </svg>
+          Dashboard
+          <span class="nav-badge" id="dashBadge">0</span>
+        </a>
+        <a
+          href="#"
+          class="nav-item"
+          data-view="tasks"
+          onclick="switchView('tasks', this)"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M9 11l3 3L22 4" />
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+          </svg>
+          All Tasks
+          <span class="nav-badge active" id="tasksBadge">0</span>
+        </a>
+        <a
+          href="#"
+          class="nav-item"
+          data-view="members"
+          onclick="switchView('members', this)"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+          </svg>
+          Team Members
+        </a>
+        <a
+          href="#"
+          class="nav-item"
+          data-view="calendar"
+          onclick="switchView('calendar', this)"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          Calendar
+        </a>
+
+        <div class="nav-section-label nav-mt-lg">Filters</div>
+        <a href="#" class="nav-item" onclick="filterByStatus('todo', this)">
+          <span class="status-dot todo"></span>
+          To Do
+          <span class="nav-badge" id="todoBadge">0</span>
+        </a>
+        <a
+          href="#"
+          class="nav-item"
+          onclick="filterByStatus('inprogress', this)"
+        >
+          <span class="status-dot inprogress"></span>
+          In Progress
+          <span class="nav-badge" id="ipBadge">0</span>
+        </a>
+        <a href="#" class="nav-item" onclick="filterByStatus('review', this)">
+          <span class="status-dot review"></span>
+          In Review
+          <span class="nav-badge" id="revBadge">0</span>
+        </a>
+        <a href="#" class="nav-item" onclick="filterByStatus('done', this)">
+          <span class="status-dot done"></span>
+          Completed
+          <span class="nav-badge" id="doneBadge">0</span>
+        </a>
+
+        <div class="nav-section-label nav-mt-lg">Export</div>
+        <a href="#" class="nav-item export-btn" onclick="exportToExcel()" title="Export to Excel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Quick Export
+        </a>
+        <a href="#" class="nav-item" onclick="requestDirectoryAccess()" title="Select Export Folder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          Set Save Folder
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="team-info">
+          <div class="team-avatar">HA</div>
+          <div class="team-text">
+            <div class="team-name">HAZA Team</div>
+            <div class="team-count" id="memberCountSidebar">0 members</div>
+          </div>
+          <button class="btn btn-ghost btn-sm logout-btn" onclick="logout()" title="Logout">
+             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="logout-icon"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button
+            class="mobile-menu-btn"
+            id="mobileMenuBtn"
+            title="Toggle Menu"
+            aria-label="Toggle Menu"
+            onclick="toggleSidebar()"
+          >
+            <span></span><span></span><span></span>
+          </button>
+          <div class="page-title" id="pageTitle">Dashboard</div>
+        </div>
+        <div class="topbar-right">
+          <div class="search-wrap">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search tasks..."
+              oninput="searchTasks(this.value)"
+            />
+          </div>
+          <div class="topbar-actions">
+            <div id="roleBadge" class="user-role-badge">Viewer</div>
+            <button class="btn btn-ghost" id="notifBtn" title="Notifications">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 01-3.46 0" />
+              </svg>
+              <span class="notif-dot" id="notifDot"></span>
+            </button>
+            <button class="btn btn-primary" onclick="openModal('addTaskModal')" title="Create New Task">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                class="icon-sm"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              New Task
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard View -->
+      <section class="view active" id="view-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card purple">
+            <div class="stat-content">
+              <div class="stat-label">Total Tasks</div>
+              <div class="stat-number" id="statTotal">0</div>
+              <div class="stat-change" id="statTotalChange">—</div>
+            </div>
+            <div class="stat-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M9 11l3 3L22 4" />
+                <path
+                  d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"
+                />
+              </svg>
+            </div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-content">
+              <div class="stat-label">In Progress</div>
+              <div class="stat-number" id="statIP">0</div>
+              <div class="stat-change" id="statIPChange">—</div>
+            </div>
+            <div class="stat-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-content">
+              <div class="stat-label">Completed</div>
+              <div class="stat-number" id="statDone">0</div>
+              <div class="stat-change" id="statDoneChange">—</div>
+            </div>
+            <div class="stat-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-content">
+              <div class="stat-label">Overdue</div>
+              <div class="stat-number" id="statOverdue">0</div>
+              <div class="stat-change" id="statOverdueChange">—</div>
+            </div>
+            <div class="stat-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Overview -->
+        <div class="dashboard-grid">
+          <div class="dash-card progress-card">
+            <div class="card-header">
+              <h3>Overall Progress</h3>
+              <span class="card-badge" id="overallPct">0%</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-track">
+                  <div
+                    class="progress-bar-fill pct-0"
+                    id="overallBar"
+                  ></div>
+              </div>
+            </div>
+            <div class="progress-breakdown">
+              <div class="breakdown-item todo">
+                <span class="breakdown-dot"></span
+                ><span>To Do: <strong id="bdTodo">0</strong></span>
+              </div>
+              <div class="breakdown-item inprogress">
+                <span class="breakdown-dot"></span
+                ><span>In Progress: <strong id="bdIP">0</strong></span>
+              </div>
+              <div class="breakdown-item review">
+                <span class="breakdown-dot"></span
+                ><span>Review: <strong id="bdRev">0</strong></span>
+              </div>
+              <div class="breakdown-item done">
+                <span class="breakdown-dot"></span
+                ><span>Done: <strong id="bdDone">0</strong></span>
+              </div>
+            </div>
+            <!-- Mini donut chart -->
+            <canvas
+              id="donutChart"
+              width="160"
+              height="160"
+              class="donut-canvas"
+            ></canvas>
+          </div>
+
+          <div class="dash-card">
+            <div class="card-header">
+              <h3>Priority Breakdown</h3>
+            </div>
+            <div class="priority-bars" id="priorityBars">
+              <div class="priority-bar-item">
+                <div class="pb-label">
+                  <span class="p-dot critical"></span>Critical
+                </div>
+                <div class="pb-track">
+                    class="pb-fill critical pct-0"
+                    id="pbCritical"
+                  ></div>
+                </div>
+                <span id="pbCriticalN">0</span>
+              </div>
+              <div class="priority-bar-item">
+                <div class="pb-label"><span class="p-dot high"></span>High</div>
+                <div class="pb-track">
+                  <div class="pb-fill high pct-0" id="pbHigh"></div>
+                </div>
+                <span id="pbHighN">0</span>
+              </div>
+              <div class="priority-bar-item">
+                <div class="pb-label">
+                  <span class="p-dot medium"></span>Medium
+                </div>
+                <div class="pb-track">
+                    class="pb-fill medium pct-0"
+                    id="pbMedium"
+                  ></div>
+                </div>
+                <span id="pbMediumN">0</span>
+              </div>
+              <div class="priority-bar-item">
+                <div class="pb-label"><span class="p-dot low"></span>Low</div>
+                <div class="pb-track">
+                  <div class="pb-fill low pct-0" id="pbLow"></div>
+                </div>
+                <span id="pbLowN">0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-card member-card">
+            <div class="card-header">
+              <h3>Team Workload</h3>
+              <button
+                class="btn btn-ghost btn-sm"
+                onclick="
+                  switchView(
+                    'members',
+                    document.querySelector('[data-view=members]'),
+                  )
+                "
+              >
+                View All
+              </button>
+            </div>
+            <div class="member-workload" id="memberWorkload">
+              <div class="empty-state-mini">
+                No members yet. Add tasks to see workload.
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-card recent-card">
+            <div class="card-header">
+              <h3>Recent Activity</h3>
+            </div>
+            <div class="activity-feed" id="activityFeed">
+              <div class="empty-state-mini">No recent activity.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tasks View -->
+      <section class="view" id="view-tasks">
+        <div class="tasks-toolbar">
+          <div class="toolbar-left">
+            <div class="filter-tabs" id="filterTabs">
+              <button
+                class="filter-tab active"
+                onclick="setFilter('all', this)"
+              >
+                All
+              </button>
+              <button class="filter-tab" onclick="setFilter('todo', this)">
+                To Do
+              </button>
+              <button
+                class="filter-tab"
+                onclick="setFilter('inprogress', this)"
+              >
+                In Progress
+              </button>
+              <button class="filter-tab" onclick="setFilter('review', this)">
+                Review
+              </button>
+              <button class="filter-tab" onclick="setFilter('done', this)">
+                Done
+              </button>
+            </div>
+          </div>
+          <div class="toolbar-right">
+            <select
+              class="select-input"
+              id="sortSelect"
+              title="Sort Tasks"
+              onchange="sortTasks(this.value)"
+            >
+              <option value="created_desc">Newest First</option>
+              <option value="created_asc">Oldest First</option>
+              <option value="due_asc">Due Soon</option>
+              <option value="priority_desc">Priority High→Low</option>
+              <option value="priority_asc">Priority Low→High</option>
+            </select>
+            <div class="view-toggle">
+              <button
+                class="vt-btn active"
+                id="cardViewBtn"
+                onclick="setTaskView('card')"
+                title="Card View"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect x="3" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" />
+                  <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
+              </button>
+              <button
+                class="vt-btn"
+                id="listViewBtn"
+                onclick="setTaskView('list')"
+                title="List View"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="8" y1="6" x2="21" y2="6" />
+                  <line x1="8" y1="12" x2="21" y2="12" />
+                  <line x1="8" y1="18" x2="21" y2="18" />
+                  <line x1="3" y1="6" x2="3.01" y2="6" />
+                  <line x1="3" y1="12" x2="3.01" y2="12" />
+                  <line x1="3" y1="18" x2="3.01" y2="18" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tasks-container card-view" id="tasksContainer">
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">📋</div>
+            <h3>No tasks yet!</h3>
+            <p>Click "New Task" to create your first team task.</p>
+            <button class="btn btn-primary" onclick="openModal('addTaskModal')">
+              Create First Task
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Members View -->
+      <section class="view" id="view-members">
+        <div class="members-toolbar">
+          <div></div>
+          <button class="btn btn-primary" onclick="openModal('addMemberModal')" title="Add New Team Member">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              class="icon-sm"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add Member
+          </button>
+        </div>
+        <div class="members-grid" id="membersGrid">
+          <div class="empty-state">
+            <div class="empty-icon">👥</div>
+            <h3>No team members yet!</h3>
+            <p>Add your team members to assign tasks.</p>
+            <button
+              class="btn btn-primary"
+              onclick="openModal('addMemberModal')"
+            >
+              Add First Member
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Calendar View -->
+      <section class="view" id="view-calendar">
+        <div class="calendar-wrap">
+          <div class="cal-header">
+            <button class="btn btn-ghost" onclick="changeMonth(-1)" title="Previous Month">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                class="cal-icon"
+              >
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+            <h2 id="calMonthYear">Month Year</h2>
+            <button class="btn btn-ghost" onclick="changeMonth(1)" title="Next Month">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                class="cal-icon"
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          </div>
+          <div class="cal-grid">
+            <div class="cal-day-header">Sun</div>
+            <div class="cal-day-header">Mon</div>
+            <div class="cal-day-header">Tue</div>
+            <div class="cal-day-header">Wed</div>
+            <div class="cal-day-header">Thu</div>
+            <div class="cal-day-header">Fri</div>
+            <div class="cal-day-header">Sat</div>
+          </div>
+          <div class="cal-body" id="calBody"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ── MODALS ── -->
+
+    <!-- Add/Edit Task Modal -->
+    <div
+      class="modal-overlay"
+      id="addTaskModal"
+      onclick="closeModalOutside(event, 'addTaskModal')"
+    >
+      <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h2 id="taskModalTitle">New Task</h2>
+          <button class="modal-close" onclick="closeModal('addTaskModal')" title="Close Modal">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editTaskId" />
+          <div class="form-group">
+            <label>Task Title <span class="req">*</span></label>
+            <input
+              type="text"
+              id="taskTitle"
+              placeholder="e.g. Design homepage wireframes"
+              class="form-input"
+            />
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea
+              id="taskDesc"
+              placeholder="Task details, requirements, notes..."
+              class="form-input"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Assigned To</label>
+              <select id="taskAssignee" class="form-input" title="Assign to member">
+                <option value="">Unassigned</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Priority <span class="req">*</span></label>
+              <select id="taskPriority" class="form-input" title="Task priority">
+                <option value="low">🟢 Low</option>
+                <option value="medium" selected>🟡 Medium</option>
+                <option value="high">🟠 High</option>
+                <option value="critical">🔴 Critical</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Status</label>
+              <select id="taskStatus" class="form-input" title="Task status">
+                <option value="todo">To Do</option>
+                <option value="inprogress">In Progress</option>
+                <option value="review">In Review</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Due Date</label>
+              <input type="date" id="taskDue" class="form-input" title="Due date" aria-label="Due date" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Category / Tag</label>
+            <input
+              type="text"
+              id="taskTag"
+              placeholder="e.g. Design, Backend, Marketing"
+              class="form-input"
+            />
+          </div>
+          <div class="form-group">
+            <label>Estimated Hours</label>
+            <input
+              type="number"
+              id="taskHours"
+              placeholder="e.g. 8"
+              class="form-input"
+              min="0"
+              step="0.5"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeModal('addTaskModal')">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveTask()">
+            Save Task
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div
+      class="modal-overlay"
+      id="addMemberModal"
+      onclick="closeModalOutside(event, 'addMemberModal')"
+    >
+      <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h2 id="memberModalTitle">Add Team Member</h2>
+          <button class="modal-close" onclick="closeModal('addMemberModal')" title="Close Modal">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editMemberId" />
+          <div class="form-group">
+            <label>Full Name <span class="req">*</span></label>
+            <input
+              type="text"
+              id="memberName"
+              placeholder="e.g. Kasun Perera"
+              class="form-input"
+            />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Role</label>
+              <input
+                type="text"
+                id="memberRole"
+                placeholder="e.g. Developer, Designer"
+                class="form-input"
+              />
+            </div>
+            <div class="form-group">
+              <label>Avatar Color</label>
+              <select id="memberColor" class="form-input" title="Avatar color">
+                <option value="#7C3AED">Purple</option>
+                <option value="#2563EB">Blue</option>
+                <option value="#059669">Green</option>
+                <option value="#D97706">Orange</option>
+                <option value="#DC2626">Red</option>
+                <option value="#0891B2">Cyan</option>
+                <option value="#BE185D">Pink</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              id="memberEmail"
+              placeholder="e.g. kasun@haza.lk"
+              class="form-input"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeModal('addMemberModal')">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveMember()">
+            Save Member
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Role Selection Modal -->
+    <div class="modal-overlay" id="roleModal">
+      <div class="role-selection-card">
+        <h1 class="role-title">Welcome to HAZA</h1>
+        <p class="role-subtitle">Please select your access level to continue</p>
+        
+        <div class="role-options">
+          <div class="role-option" id="optViewer" onclick="selectRole('viewer')">
+            <div class="role-icon">👁️</div>
+            <div class="role-name">Viewer</div>
+            <div class="role-desc">Read-only access to tasks and progress</div>
+            <div class="role-tick">✓</div>
+          </div>
+          
+          <div class="role-option" id="optAdmin" onclick="selectRole('admin')">
+            <div class="role-icon">⚡</div>
+            <div class="role-name">Admin</div>
+            <div class="role-desc">Full access to manage tasks and team</div>
+            <div class="role-tick">✓</div>
+          </div>
+        </div>
+
+        <div id="adminPassSection" class="admin-pass-wrap pass-hidden">
+          <input type="password" id="adminPassword" class="form-input" placeholder="Enter Admin Password" oninput="confirmAdminRole()" onkeydown="if(event.key==='Enter') confirmAdminRole(true)" />
+          <p id="passError" class="pass-error pass-hidden">❌ Incorrect Password</p>
+        </div>
+
+        <button class="btn btn-primary role-btn" id="confirmRoleBtn" title="Confirm Role" onclick="finalizeRole()" disabled>
+          Continue to Dashboard
+        </button>
+      </div>
+    </div>
+
+    <!-- Task Detail Modal -->
+    <div
+      class="modal-overlay"
+      id="taskDetailModal"
+      onclick="closeModalOutside(event, 'taskDetailModal')"
+    >
+      <div class="modal modal-large" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h2 id="detailTitle">Task Details</h2>
+          <button class="modal-close" onclick="closeModal('taskDetailModal')" title="Close Modal">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body" id="detailBody"></div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeModal('taskDetailModal')">
+            Close
+          </button>
+          <button class="btn btn-secondary" id="detailEditBtn" onclick="">
+            Edit Task
+          </button>
+          <button class="btn btn-danger" id="detailDeleteBtn" onclick="">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
